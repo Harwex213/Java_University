@@ -29,7 +29,7 @@ public class Main {
 
             LOGGER.info("Adding 3 instances of type Engineer to the staff.");
             director.getStaff().add(new Engineer("Adam", 25, 700));
-            director.getStaff().add(new Engineer("Friedrich", 17, 850));
+            director.getStaff().add(new Engineer("Friedrich", 19, 850));
             director.getStaff().add(new Engineer("Oliver", 19, 850));
 
             LOGGER.info("Adding 2 instances of type SysAdmin to the staff.");
@@ -59,6 +59,20 @@ public class Main {
                     " and printing elements of staff array via foreach");
             for (Employee el: director.getStaffWithSkill(EmployeeSkill.ProgrammerJunior))
                 System.out.println(el.toString());
+
+            LOGGER.info("Starting Lab04");
+
+            // Serialization & Deserialization via JSON.
+            var sysAdmin = new SysAdmin("William", 32, 1900);
+            sysAdmin.SerializeViaJson();
+            var sysAdmin2 = SysAdmin.DeserializeViaJson(SysAdmin.class);
+            System.out.println(sysAdmin2);
+
+            // Stream API.
+            var countEmployee = director.getStaff().stream().filter((el) -> el.getAge() > 20).count();
+            System.out.println(countEmployee);
+            var employee = director.getStaff().stream().filter((el)-> el.getSalary() > 1000).min(new Director.SortByEmployees());
+            System.out.println(employee);
         }
         catch(Exception ex)
         {

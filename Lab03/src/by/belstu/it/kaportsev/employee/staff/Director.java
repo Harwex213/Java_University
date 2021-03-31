@@ -1,17 +1,22 @@
 package by.belstu.it.kaportsev.employee.staff;
 
+import java.io.*;
 import java.util.*;
 import by.belstu.it.kaportsev.employee.*;
-
+import com.alibaba.fastjson.*;
 
 public class Director extends Employee implements IDirector {
     private ArrayList<Employee> staff;
 
-    static class SortByEmployees implements Comparator<Employee> {
+    public static class SortByEmployees implements Comparator<Employee> {
         @Override
         public int compare(Employee o1, Employee o2) {
             return Float.compare(o1.getSalary(), o2.getSalary());
         }
+    }
+
+    public Director() {
+        super();
     }
 
     public Director(String name, int age, float salary) throws Exception {

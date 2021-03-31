@@ -1,9 +1,15 @@
 package by.belstu.it.kaportsev.employee;
 
+import com.alibaba.fastjson.JSON;
+import java.io.*;
+import java.lang.reflect.Type;
+
 public abstract class Employee {
     private String name;
     private int age;
     private float salary;
+
+    public Employee() { }
 
     public Employee(String name, int age, float salary) throws Exception
     {
@@ -45,5 +51,31 @@ public abstract class Employee {
     @Override
     public String toString() {
         return this.getClass() + ":: name: " + this.name + ", age: " + this.age + ", salary: " + this.salary + '.';
+    }
+
+    public void SerializeViaJson() {
+        try(var outputStream = new FileOutputStream("Lab03\\files\\objects.json"))
+        {
+            var bytesOutput = JSON.toJSONBytes(this);
+            outputStream.write(bytesOutput);
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public static Employee DeserializeViaJson(Type clazz) {
+        Employee returnValue = null;
+        try(var inputStream = new FileInputStream("Lab03\\files\\objects.json"))
+        {
+            var bytesInput = inputStream.readAllBytes();
+            returnValue = JSON.parseObject(bytesInput, clazz);
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+        }
+        return returnValue;
     }
 }
