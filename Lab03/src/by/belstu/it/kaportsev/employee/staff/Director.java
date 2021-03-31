@@ -3,7 +3,11 @@ package by.belstu.it.kaportsev.employee.staff;
 import java.io.*;
 import java.util.*;
 import by.belstu.it.kaportsev.employee.*;
+import by.belstu.it.kaportsev.xmlParsing.StaxManager;
 import com.alibaba.fastjson.*;
+
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.events.XMLEvent;
 
 public class Director extends Employee implements IDirector {
     private ArrayList<Employee> staff;
@@ -30,6 +34,56 @@ public class Director extends Employee implements IDirector {
 
     public void setStaff(ArrayList<Employee> staff) {
         this.staff = staff;
+    }
+
+    public void ParseXml() {
+        try {
+            staff = new ArrayList<>();
+            staff.addAll(ParseEngineer());
+            staff.addAll(ParseSysAdmin());
+            staff.addAll(ParseProgrammer());
+        }
+        catch (Exception exception) {
+            System.out.println(exception.getMessage());
+        }
+    }
+
+    private ArrayList<Employee> ParseEngineer() throws Exception {
+        var employees = new ArrayList<Employee>();
+        var staxManager = new StaxManager(new FileInputStream("Lab03\\files\\xmlObjects.xml"));
+        while (staxManager.startElement("Engineer", null)) {
+            employees.add(
+                    new Engineer(staxManager.getAttribute("name"),
+                    Integer.parseInt(staxManager.getAttribute("age")),
+                    Float.parseFloat(staxManager.getAttribute("salary"))));
+        }
+        return employees;
+    }
+
+    private ArrayList<Employee> ParseSysAdmin() throws Exception {
+        var employees = new ArrayList<Employee>();
+        var staxManager = new StaxManager(new FileInputStream("Lab03\\files\\xmlObjects.xml"));
+        while (staxManager.startElement("SysAdmin", null)) {
+            employees.add(
+                    new SysAdmin(staxManager.getAttribute("name"),
+                    Integer.parseInt(staxManager.getAttribute("age")),
+                    Float.parseFloat(staxManager.getAttribute("salary"))));
+        }
+        return employees;
+    }
+
+    private ArrayList<Employee> ParseProgrammer() throws Exception {
+        var employees = new ArrayList<Employee>();
+        var staxManager = new StaxManager(new FileInputStream("Lab03\\files\\xmlObjects.xml"));
+        while (staxManager.startElement("Programmer", null)) {
+
+            employees.add(new Programmer(
+                    staxManager.getAttribute("name"),
+                    Integer.parseInt(staxManager.getAttribute("age")),
+                    Float.parseFloat(staxManager.getAttribute("salary")),
+                    Programmer.Qualification.TakeQualification(staxManager.getAttribute("qualification"))));
+        }
+        return employees;
     }
 
     @Override

@@ -1,8 +1,11 @@
 package by.belstu.it.kaportsev.employee;
 
+import by.belstu.it.kaportsev.xmlParsing.StaxManager;
 import com.alibaba.fastjson.JSON;
+
 import java.io.*;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 
 public abstract class Employee {
     private String name;
@@ -48,34 +51,20 @@ public abstract class Employee {
         this.salary = salary;
     }
 
+    public void SerializeViaJson() throws IOException {
+        var outputStream = new FileOutputStream("Lab03\\files\\objects.json");
+        var bytesOutput = JSON.toJSONBytes(this);
+        outputStream.write(bytesOutput);
+    }
+
+    public static Employee DeserializeViaJson(Type clazz) throws IOException {
+        var inputStream = new FileInputStream("Lab03\\files\\objects.json");
+        var bytesInput = inputStream.readAllBytes();
+        return JSON.parseObject(bytesInput, clazz);
+    }
+
     @Override
     public String toString() {
         return this.getClass() + ":: name: " + this.name + ", age: " + this.age + ", salary: " + this.salary + '.';
-    }
-
-    public void SerializeViaJson() {
-        try(var outputStream = new FileOutputStream("Lab03\\files\\objects.json"))
-        {
-            var bytesOutput = JSON.toJSONBytes(this);
-            outputStream.write(bytesOutput);
-        }
-        catch (Exception e)
-        {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    public static Employee DeserializeViaJson(Type clazz) {
-        Employee returnValue = null;
-        try(var inputStream = new FileInputStream("Lab03\\files\\objects.json"))
-        {
-            var bytesInput = inputStream.readAllBytes();
-            returnValue = JSON.parseObject(bytesInput, clazz);
-        }
-        catch (Exception e)
-        {
-            System.out.println(e.getMessage());
-        }
-        return returnValue;
     }
 }

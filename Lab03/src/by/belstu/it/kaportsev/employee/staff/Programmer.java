@@ -4,7 +4,11 @@ import by.belstu.it.kaportsev.employee.Employee;
 
 public class Programmer extends Employee {
     public enum Qualification {
-        Junior, Middle, Senior
+        Junior, Middle, Senior;
+
+        public static Qualification TakeQualification(String name) {
+            return Qualification.valueOf(name);
+        }
     }
 
     private Qualification qualification;

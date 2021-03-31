@@ -73,6 +73,11 @@ public class Main {
             System.out.println(countEmployee);
             var employee = director.getStaff().stream().filter((el)-> el.getSalary() > 1000).min(new Director.SortByEmployees());
             System.out.println(employee);
+
+            // Parsing XML.
+            director.ParseXml();
+            for (Employee el: director.getStaff())
+                System.out.println(el.toString());
         }
         catch(Exception ex)
         {
