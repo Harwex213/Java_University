@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Director xsi:schemaLocation="xmlSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <Engineer name="Oleg Kaportsev" age="19" salary="3000"/>
+    <Engineer name="Igor Skvortsov" age="32" salary="3000"/>
+    <Engineer name="Joker Havok" age="18" salary="1200"/>
+    <SysAdmin name="Bob Watson" age="20" salary="12000"/>
+    <SysAdmin name="Kate Jackson" age="25" salary="5200"/>
+    <Programmer name="Mars Septimum" age="42" salary="4000" qualification="Junior"/>
+    <Programmer name="Ulrich Nielsen" age="19" salary="5000" qualification="Senior"/>
+    <Programmer name="Saturn Kaster" age="23" salary="6000" qualification="Middle"/>
+</Director>
