@@ -61,7 +61,6 @@ public class Main {
                 System.out.println(el.toString());
 
             LOGGER.info("Starting Lab04");
-
             // Serialization & Deserialization via JSON.
             var sysAdmin = new SysAdmin("William", 32, 1900);
             sysAdmin.SerializeViaJson();
@@ -71,7 +70,8 @@ public class Main {
             // Stream API.
             var countEmployee = director.getStaff().stream().filter((el) -> el.getAge() > 20).count();
             System.out.println(countEmployee);
-            var employee = director.getStaff().stream().filter((el)-> el.getSalary() > 1000).min(new Director.SortByEmployees());
+            var employee = director.getStaff().stream().
+                    filter((el)-> el.getSalary() > 1000).min(new Director.SortByEmployees());
             System.out.println(employee);
 
             // Parsing XML.

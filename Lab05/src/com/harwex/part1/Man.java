@@ -5,13 +5,18 @@ import java.util.Random;
 public class Man extends Thread {
     private final Shower shower;
     private final Gender gender;
+    private final int timeInShower;
     private static int id = 0;
 
     public Man(Shower shower) {
         super("Anon");
+
+        var random = new Random();
+        timeInShower = random.nextInt(700);
         this.shower = shower;
         gender = Gender.GetRandomGender();
-        setName("Man " + id++ + ", gender: " + gender.name());
+        setName(gender.name() + " " + id++);
+        System.out.println(getName() + " ready to take a shower");
     }
 
     public Shower getShower() {
@@ -22,12 +27,16 @@ public class Man extends Thread {
         return gender;
     }
 
+    public int getTimeInShower() {
+        return timeInShower;
+    }
+
     @Override
     public void run() {
         try {
-            shower.ShowerIn();
+            shower.ShowerIn(this);
             Thread.sleep(3000);
-            shower.ShowerOut();
+            shower.ShowerOut(this);
         }
         catch (InterruptedException ignored) {
         }
@@ -39,6 +48,13 @@ enum Gender {
 
     public static Gender GetRandomGender() {
         var random = new Random();
-        return Gender.values().clone()[random.nextInt(values().length)];
+        return Gender.values()[random.nextInt(values().length)];
+    }
+
+    public static Gender GetAnotherGender(Gender gender) {
+        var newGender = Gender.Male;
+        if (newGender.equals(gender))
+            newGender = Gender.Female;
+        return newGender;
     }
 }

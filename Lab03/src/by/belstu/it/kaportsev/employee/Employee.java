@@ -1,11 +1,8 @@
 package by.belstu.it.kaportsev.employee;
 
-import by.belstu.it.kaportsev.xmlParsing.StaxManager;
 import com.alibaba.fastjson.JSON;
-
 import java.io.*;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 
 public abstract class Employee {
     private String name;

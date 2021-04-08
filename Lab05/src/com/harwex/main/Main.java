@@ -5,7 +5,6 @@ import com.harwex.part1.Shower;
 import com.harwex.part2.Car;
 import com.harwex.part2.Parking;
 
-import java.util.Formattable;
 import java.util.concurrent.Semaphore;
 
 public class Main {
@@ -18,7 +17,7 @@ public class Main {
     public static void TaskOne() {
         var shower = new Shower(2);
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 5; i++) {
             new Man(shower).start();
         }
     }
