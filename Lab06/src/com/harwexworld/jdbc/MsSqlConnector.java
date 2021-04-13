@@ -7,18 +7,27 @@ import java.sql.SQLException;
 public class MsSqlConnector implements IConnector {
     private static final String driverString = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
     private static Connection connection;
+    private String connectionUrl;
 
-    public static Connection getConnection() {
-        return connection;
+    static {
+        try {
+            Class.forName(driverString);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
-    public Connection openConnection(String connectionUrl) {
+    public void createConnection(String connectionUrl) {
+        this.connectionUrl = connectionUrl;
+    }
+
+    @Override
+    public Connection getConnection() {
         try {
-            Class.forName(driverString);
             connection = DriverManager.getConnection(connectionUrl);
-        } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
         }
         return connection;
     }
