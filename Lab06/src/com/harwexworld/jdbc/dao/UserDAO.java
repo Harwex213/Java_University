@@ -15,19 +15,16 @@ public class UserDAO implements DAO<User, Integer> {
     }
 
     @Override
-    public boolean create(User model) {
-        boolean result = false;
-
+    public void create(User model) {
         try (PreparedStatement statement = connector.getConnection().prepareStatement(SqlViewUserDAO.INSERT.QUERY)) {
             FillStatement(statement, model);
-            result = statement.executeQuery().next();
+            statement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
         finally {
             connector.closeConnection();
         }
-        return result;
     }
 
     @Override
@@ -41,9 +38,9 @@ public class UserDAO implements DAO<User, Integer> {
             if (resultSet.next()) {
                 user.setId(id);
                 user.setFirstName(resultSet.getString("FirstName"));
-                user.setFirstName(resultSet.getString("LastName"));
-                user.setFirstName(resultSet.getString("Address"));
-                user.setFirstName(resultSet.getString("Passport"));
+                user.setLastName(resultSet.getString("LastName"));
+                user.setAddress(resultSet.getString("Address"));
+                user.setPassport(resultSet.getString("Passport"));
                 user.setLogin(resultSet.getString("Login"));
                 user.setPassword(resultSet.getString("Password"));
                 user.setRole(new User.Role(resultSet.getInt("RoleId"), resultSet.getString("RoleName")));
@@ -58,35 +55,29 @@ public class UserDAO implements DAO<User, Integer> {
     }
 
     @Override
-    public boolean update(User model) {
-        boolean result = false;
-
+    public void update(User model) {
         try (PreparedStatement statement = connector.getConnection().prepareStatement(SqlViewUserDAO.UPDATE.QUERY)) {
             FillStatement(statement, model);
-            result = statement.executeQuery().next();
+            statement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
         finally {
             connector.closeConnection();
         }
-        return result;
     }
 
     @Override
-    public boolean delete(User model) {
-        boolean result = false;
-
+    public void delete(User model) {
         try (PreparedStatement statement = connector.getConnection().prepareStatement(SqlViewUserDAO.DELETE.QUERY)) {
             statement.setInt(1, model.getId());
-            result = statement.executeQuery().next();
+            statement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
         finally {
             connector.closeConnection();
         }
-        return result;
     }
 
     private void FillStatement(PreparedStatement statement, User model) throws SQLException {
@@ -101,14 +92,15 @@ public class UserDAO implements DAO<User, Integer> {
 
     enum SqlViewUserDAO {
         GET("SELECT " +
-                "u.Id, u.FirstName, u.LastName, r.Id as RoleId, r.Name as RoleName, u.Login, u.Password " +
+                "u.FirstName, u.LastName, u.Address, u.Passport, u.Login, u.Password, " +
+                "r.Id as RoleId, r.Name as RoleName " +
                 "FROM USER_ACCOUNT AS u INNER JOIN USER_ACCOUNT_TYPE AS r ON u.AccountType = r.Id " +
                 "WHERE u.Id = (?)"),
 
-        INSERT("INSERT" +
-                " INTO USER_ACCOUNT " +
-                "(FirstName, LastName, Address, Passport, AccountType, Login, Password)" +
-                " VALUES " +
+        INSERT("INSERT " +
+                "INTO USER_ACCOUNT " +
+                "(FirstName, LastName, Address, Passport, AccountType, Login, Password) " +
+                "VALUES " +
                 "((?), (?), (?), (?), (?), (?), (?))"),
 
         DELETE("DELETE " +
@@ -117,7 +109,7 @@ public class UserDAO implements DAO<User, Integer> {
 
         UPDATE("UPDATE USER_ACCOUNT " +
                 "SET FirstName = (?), LastName = (?), Address = (?), Passport = (?), " +
-                    "AccountType = (?), Login = (?), Password = (?)" +
+                    "AccountType = (?), Login = (?), Password = (?) " +
                 "WHERE Id = (?)");
 
         String QUERY;

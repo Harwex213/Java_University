@@ -11,15 +11,15 @@ public class Main {
         var userDAO = new UserDAO(msSqlConnector, connectionUrl);
 
         var userIgor = new User();
-        userIgor.setFirstName("Igor");
-        userIgor.setLastName("Skvortsov");
+        userIgor.setFirstName("GAGA");
+        userIgor.setLastName("GAGSFA");
         userIgor.setAddress("Minsk, Vaneeva 10, 18");
         userIgor.setPassport("MG1234567");
         userIgor.setRole(new User.Role(1, "admin"));
         userIgor.setLogin("traveler");
         userIgor.setPassword("qwerty");
         userDAO.create(userIgor);
-        var userOleg = userDAO.readByKey(3);
+        var userOleg = userDAO.readByKey(14);
         userDAO.delete(userOleg);
         userDAO.create(userOleg);
     }
