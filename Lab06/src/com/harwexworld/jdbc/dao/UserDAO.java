@@ -107,9 +107,9 @@ public class UserDAO implements DAO<User, Integer> {
 
         INSERT("INSERT" +
                 " INTO USER_ACCOUNT " +
-                "(Id, FirstName, LastName, Address, Passport, AccountType, Login, Password)" +
+                "(FirstName, LastName, Address, Passport, AccountType, Login, Password)" +
                 " VALUES " +
-                "(DEFAULT, (?), (?), (?), (?), (?), (?), (?))"),
+                "((?), (?), (?), (?), (?), (?), (?))"),
 
         DELETE("DELETE " +
                 "FROM USER_ACCOUNT " +

@@ -1,7 +1,26 @@
 package com.harwexworld.main;
 
+import com.harwexworld.jdbc.*;
+import com.harwexworld.jdbc.dao.*;
+import com.harwexworld.model.*;
+
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Hello World!");
+        IConnector msSqlConnector = new MsSqlConnector();
+        var connectionUrl = "jdbc:sqlserver://localhost;database=HARWEX_BANK;integratedSecurity=true;";
+        var userDAO = new UserDAO(msSqlConnector, connectionUrl);
+
+        var userIgor = new User();
+        userIgor.setFirstName("Igor");
+        userIgor.setLastName("Skvortsov");
+        userIgor.setAddress("Minsk, Vaneeva 10, 18");
+        userIgor.setPassport("MG1234567");
+        userIgor.setRole(new User.Role(1, "admin"));
+        userIgor.setLogin("traveler");
+        userIgor.setPassword("qwerty");
+        userDAO.create(userIgor);
+        var userOleg = userDAO.readByKey(3);
+        userDAO.delete(userOleg);
+        userDAO.create(userOleg);
     }
 }
