@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="Lab08:war">
+    <output-path>$PROJECT_DIR$/Lab08/target</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <module>Lab08</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
+    <root id="archive" name="Lab08-1.0-SNAPSHOT.war">
+      <element id="artifact" artifact-name="Lab08:war exploded" />
+    </root>
+  </artifact>
+</component>
