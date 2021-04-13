@@ -4,6 +4,8 @@ public class User {
     private int id;
     private String firstName;
     private String lastName;
+    private String address;
+    private String passport;
     private Role role;
     private String login;
     private String password;
@@ -32,6 +34,23 @@ public class User {
         this.lastName = lastName;
     }
 
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getPassport() {
+        return passport;
+    }
+
+    public void setPassport(String passport) {
+        this.passport = passport;
+    }
+
+
     public Role getRole() {
         return role;
     }
@@ -59,6 +78,11 @@ public class User {
     public static class Role {
         private int id;
         private String roleName;
+
+        public Role(int id, String roleName) {
+            this.id = id;
+            this.roleName = roleName;
+        }
 
         public int getId() {
             return id;
