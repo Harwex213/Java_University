@@ -4,7 +4,6 @@ import com.harwexworld.dao.DAO;
 import com.harwexworld.jdbc.IConnector;
 import com.harwexworld.model.User;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class UserDAO implements DAO<User, Integer> {
@@ -20,16 +19,13 @@ public class UserDAO implements DAO<User, Integer> {
         boolean result = false;
 
         try (PreparedStatement statement = connector.getConnection().prepareStatement(SqlViewUserDAO.INSERT.QUERY)) {
-            statement.setString(1, model.getFirstName());
-            statement.setString(2, model.getLastName());
-            statement.setString(3, model.getAddress());
-            statement.setString(4, model.getPassport());
-            statement.setInt(5, model.getRole().getId());
-            statement.setString(6, model.getLogin());
-            statement.setString(7, model.getPassword());
+            FillStatement(statement, model);
             result = statement.executeQuery().next();
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+        finally {
+            connector.closeConnection();
         }
         return result;
     }
@@ -63,12 +59,44 @@ public class UserDAO implements DAO<User, Integer> {
 
     @Override
     public boolean update(User model) {
-        return false;
+        boolean result = false;
+
+        try (PreparedStatement statement = connector.getConnection().prepareStatement(SqlViewUserDAO.UPDATE.QUERY)) {
+            FillStatement(statement, model);
+            result = statement.executeQuery().next();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        finally {
+            connector.closeConnection();
+        }
+        return result;
     }
 
     @Override
     public boolean delete(User model) {
-        return false;
+        boolean result = false;
+
+        try (PreparedStatement statement = connector.getConnection().prepareStatement(SqlViewUserDAO.DELETE.QUERY)) {
+            statement.setInt(1, model.getId());
+            result = statement.executeQuery().next();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        finally {
+            connector.closeConnection();
+        }
+        return result;
+    }
+
+    private void FillStatement(PreparedStatement statement, User model) throws SQLException {
+        statement.setString(1, model.getFirstName());
+        statement.setString(2, model.getLastName());
+        statement.setString(3, model.getAddress());
+        statement.setString(4, model.getPassport());
+        statement.setInt(5, model.getRole().getId());
+        statement.setString(6, model.getLogin());
+        statement.setString(7, model.getPassword());
     }
 
     enum SqlViewUserDAO {
@@ -76,13 +104,21 @@ public class UserDAO implements DAO<User, Integer> {
                 "u.Id, u.FirstName, u.LastName, r.Id as RoleId, r.Name as RoleName, u.Login, u.Password " +
                 "FROM USER_ACCOUNT AS u INNER JOIN USER_ACCOUNT_TYPE AS r ON u.AccountType = r.Id " +
                 "WHERE u.Id = (?)"),
+
         INSERT("INSERT" +
                 " INTO USER_ACCOUNT " +
                 "(Id, FirstName, LastName, Address, Passport, AccountType, Login, Password)" +
                 " VALUES " +
                 "(DEFAULT, (?), (?), (?), (?), (?), (?), (?))"),
-        DELETE("DELETE FROM users WHERE id = (?) AND login = (?) AND password = (?) RETURNING id"),
-        UPDATE("UPDATE users SET password = (?) WHERE id = (?) RETURNING id");
+
+        DELETE("DELETE " +
+                "FROM USER_ACCOUNT " +
+                "WHERE Id = (?)"),
+
+        UPDATE("UPDATE USER_ACCOUNT " +
+                "SET FirstName = (?), LastName = (?), Address = (?), Passport = (?), " +
+                    "AccountType = (?), Login = (?), Password = (?)" +
+                "WHERE Id = (?)");
 
         String QUERY;
 
