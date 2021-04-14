@@ -10,10 +10,13 @@ import java.util.HashMap;
 
 public abstract class HarwexBankDbDAO<Entity, Key> implements DAO<Entity, Key> {
     protected final IConnector connector;
+    private final HashMap<String, String> queriesParams;
 
     public HarwexBankDbDAO(IConnector connector, String connectionUrl) {
         this.connector = connector;
         this.connector.createConnection(connectionUrl);
+        queriesParams = new HashMap<>();
+        SqlViewDAO.TakeQueriesParams(this);
     }
 
     @Override
@@ -34,7 +37,7 @@ public abstract class HarwexBankDbDAO<Entity, Key> implements DAO<Entity, Key> {
         Entity model = GetModel();
 
         try (PreparedStatement statement = connector.getConnection().prepareStatement(CreateSelectQuery())) {
-            SetKey(statement, model, 1);
+            statement.setObject(1, key);
             var resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 FillModelFromResultSet(resultSet, model);
@@ -76,17 +79,17 @@ public abstract class HarwexBankDbDAO<Entity, Key> implements DAO<Entity, Key> {
 
     private String CreateInsertQuery() {
         var strBuffer = new StringBuilder(SqlViewDAO.INSERT.QUERY);
-        strBuffer.insert(strBuffer.indexOf("insertValue"), GetInsertQuery().get("insertValue"));
-        strBuffer.insert(strBuffer.indexOf("valuesValue"), GetInsertQuery().get("valuesValue"));
+        strBuffer.insert(strBuffer.indexOf("insertIntoValue"), queriesParams.get("insertIntoValue"));
+        strBuffer.insert(strBuffer.indexOf("valuesValue"), queriesParams.get("valuesValue"));
         return strBuffer.toString().
-                replace("insertValue", "").
+                replace("insertIntoValue", "").
                 replace("valuesValue", "");
     }
 
     private String CreateSelectQuery() {
         var strBuffer = new StringBuilder(SqlViewDAO.SELECT.QUERY);
-        strBuffer.insert(strBuffer.indexOf("selectValue"), GetSelectQuery().get("selectValue"));
-        strBuffer.insert(strBuffer.indexOf("fromValue"), GetSelectQuery().get("fromValue"));
+        strBuffer.insert(strBuffer.indexOf("selectValue"), queriesParams.get("selectValue"));
+        strBuffer.insert(strBuffer.indexOf("fromValue"), queriesParams.get("fromValue"));
         return strBuffer.toString().
                 replace("selectValue", "").
                 replace("fromValue", "");
@@ -94,8 +97,8 @@ public abstract class HarwexBankDbDAO<Entity, Key> implements DAO<Entity, Key> {
 
     private String CreateUpdateQuery() {
         var strBuffer = new StringBuilder(SqlViewDAO.UPDATE.QUERY);
-        strBuffer.insert(strBuffer.indexOf("updateFromValue"), GetUpdateQuery().get("updateFromValue"));
-        strBuffer.insert(strBuffer.indexOf("setValue"), GetUpdateQuery().get("setValue"));
+        strBuffer.insert(strBuffer.indexOf("updateFromValue"), queriesParams.get("updateFromValue"));
+        strBuffer.insert(strBuffer.indexOf("setValue"), queriesParams.get("setValue"));
         return strBuffer.toString().
                 replace("updateFromValue", "").
                 replace("setValue", "");
@@ -103,21 +106,25 @@ public abstract class HarwexBankDbDAO<Entity, Key> implements DAO<Entity, Key> {
 
     private String CreateDeleteQuery() {
         var strBuffer = new StringBuilder(SqlViewDAO.DELETE.QUERY);
-        strBuffer.insert(strBuffer.indexOf("deleteFromValue"), GetDeleteQuery().get("deleteFromValue"));
+        strBuffer.insert(strBuffer.indexOf("deleteFromValue"), queriesParams.get("deleteFromValue"));
         return strBuffer.toString().replace("deleteFromValue", "");
     }
 
     protected abstract Entity GetModel();
-    protected abstract HashMap<String, String> GetInsertQuery();
-    protected abstract HashMap<String, String> GetSelectQuery();
-    protected abstract HashMap<String, String> GetUpdateQuery();
-    protected abstract HashMap<String, String> GetDeleteQuery();
+    protected abstract void GetInsertQuery(String insertIntoKey, String valuesKey);
+    protected abstract void GetSelectQuery(String selectKey, String fromKey);
+    protected abstract void GetUpdateQuery(String updateFromKey, String setValuesKey);
+    protected abstract void GetDeleteQuery(String deleteFromKey);
     protected abstract void FillStatement(PreparedStatement statement, Entity model);
     protected abstract void FillModelFromResultSet(ResultSet resultSet, Entity model);
     protected abstract void SetKey(PreparedStatement statement, Entity model, int positionKey);
 
+    public HashMap<String, String> getQueriesParams() {
+        return queriesParams;
+    }
+
     enum SqlViewDAO {
-        INSERT("INSERT INTO insertValue VALUES (valuesValue)"),
+        INSERT("INSERT INTO insertIntoValue VALUES (valuesValue)"),
 
         SELECT ("SELECT selectValue FROM fromValue WHERE u.Id = (?)"),
 
@@ -129,6 +136,13 @@ public abstract class HarwexBankDbDAO<Entity, Key> implements DAO<Entity, Key> {
 
         SqlViewDAO(String QUERY) {
             this.QUERY = QUERY;
+        }
+
+        public static void TakeQueriesParams(HarwexBankDbDAO obj) {
+            obj.GetInsertQuery("insertIntoValue", "valuesValue");
+            obj.GetSelectQuery("selectValue", "fromValue");
+            obj.GetUpdateQuery("updateFromValue", "setValue");
+            obj.GetDeleteQuery("deleteFromValue");
         }
     }
 }

@@ -9,12 +9,6 @@ import java.sql.SQLException;
 import java.util.HashMap;
 
 public class UserDAO extends HarwexBankDbDAO<User, Integer> {
-    private final HashMap<String, String> queriesParams;
-
-    {
-        queriesParams = new HashMap<>();
-    }
-
     public UserDAO(IConnector connector, String connectionUrl) {
         super(connector, connectionUrl);
     }
@@ -25,43 +19,39 @@ public class UserDAO extends HarwexBankDbDAO<User, Integer> {
     }
 
     @Override
-    protected HashMap<String, String> GetInsertQuery() {
-        var intoValue = "USER_ACCOUNT (FirstName, LastName, Address, Passport, AccountType, Login, Password)";
+    protected void GetInsertQuery(String insertIntoKey, String valuesKey) {
+        var insertIntoValue = "USER_ACCOUNT (FirstName, LastName, Address, Passport, AccountType, Login, Password)";
         var valuesValue = "(?), (?), (?), (?), (?), (?), (?)";
 
-        queriesParams.put("intoValue", intoValue);
-        queriesParams.put("valuesValue", valuesValue);
-        return queriesParams;
+        getQueriesParams().put(insertIntoKey, insertIntoValue);
+        getQueriesParams().put(valuesKey, valuesValue);
     }
 
     @Override
-    protected HashMap<String, String> GetSelectQuery() {
-        var selectValue = "u.FirstName, u.LastName, u.Address, u.Passport," +
+    protected void GetSelectQuery(String selectKey, String fromKey) {
+        var selectValue = "u.Id, u.FirstName, u.LastName, u.Address, u.Passport," +
                 " u.Login, u.Password, r.Id as RoleId, r.Name as RoleName";
         var fromValue = "USER_ACCOUNT AS u INNER JOIN USER_ACCOUNT_TYPE AS r ON u.AccountType = r.Id";
 
-        queriesParams.put("selectValue", selectValue);
-        queriesParams.put("fromValue", fromValue);
-        return queriesParams;
+        getQueriesParams().put(selectKey, selectValue);
+        getQueriesParams().put(fromKey, fromValue);
     }
 
     @Override
-    protected HashMap<String, String> GetUpdateQuery() {
+    protected void GetUpdateQuery(String updateFromKey, String setValuesKey) {
         var updateFromValue = "USER_ACCOUNT";
         var setValue = "FirstName = (?), LastName = (?), Address = (?), Passport = (?)," +
                 " AccountType = (?), Login = (?), Password = (?)";
 
-        queriesParams.put("updateFromValue", updateFromValue);
-        queriesParams.put("setValue", setValue);
-        return queriesParams;
+        getQueriesParams().put(updateFromKey, updateFromValue);
+        getQueriesParams().put(setValuesKey, setValue);
     }
 
     @Override
-    protected HashMap<String, String> GetDeleteQuery() {
+    protected void GetDeleteQuery(String deleteFromKey) {
         var updateFromValue = "USER_ACCOUNT";
 
-        queriesParams.put("updateFromValue", updateFromValue);
-        return queriesParams;
+        getQueriesParams().put(deleteFromKey, updateFromValue);
     }
 
     @Override
@@ -98,14 +88,10 @@ public class UserDAO extends HarwexBankDbDAO<User, Integer> {
     @Override
     protected void SetKey(PreparedStatement statement, User model, int positionKey) {
         try {
-            statement.setInt(1, model.getId());
+            statement.setInt(positionKey, model.getId());
         } catch (SQLException throwable) {
             throwable.printStackTrace();
         }
-    }
-
-    public HashMap<String, String> getQueriesParams() {
-        return queriesParams;
     }
 
     enum SaveSql {
