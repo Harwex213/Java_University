@@ -63,8 +63,8 @@ public class Main {
             LOGGER.info("Starting Lab04");
             // Serialization & Deserialization via JSON.
             var sysAdmin = new SysAdmin("William", 32, 1900);
-            sysAdmin.SerializeViaJson();
-            var sysAdmin2 = SysAdmin.DeserializeViaJson(SysAdmin.class);
+            sysAdmin.SerializeViaJson("Lab03\\files\\objects.json");
+            var sysAdmin2 = SysAdmin.DeserializeViaJson("Lab03\\files\\objects.json", SysAdmin.class);
             System.out.println(sysAdmin2);
 
             // Stream API.
