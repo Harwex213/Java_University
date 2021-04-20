@@ -3,16 +3,31 @@ package com.harwexworld.jdbc.dao;
 import com.harwexworld.dao.DAO;
 import com.harwexworld.jdbc.IConnector;
 
+import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
 
 public abstract class HarwexBankDbDAO<Entity, Key> implements DAO<Entity, Key> {
     protected final IConnector connector;
     private final HashMap<String, String> queriesParams;
+    private static Logger LOGGER;
+
+    static {
+        try {
+            var fileHandler = new FileHandler("Lab06\\logManager.log");
+            LOGGER = Logger.getLogger(HarwexBankDbDAO.class.getName());
+            LOGGER.addHandler(fileHandler);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public HarwexBankDbDAO(IConnector connector, String connectionUrl) {
+        LOGGER.info("Constructing HarwexBankDbDAO class");
         this.connector = connector;
         this.connector.createConnection(connectionUrl);
         queriesParams = new HashMap<>();
@@ -21,6 +36,7 @@ public abstract class HarwexBankDbDAO<Entity, Key> implements DAO<Entity, Key> {
 
     @Override
     public void create(Entity model) {
+        LOGGER.info("Creating entity " + model.getClass() + " to add to Database");
         try (PreparedStatement statement = connector.getConnection().prepareStatement(CreateInsertQuery())) {
             FillStatement(statement, model);
             statement.executeUpdate();
@@ -34,6 +50,7 @@ public abstract class HarwexBankDbDAO<Entity, Key> implements DAO<Entity, Key> {
 
     @Override
     public Entity readByKey(Key key) {
+        LOGGER.info("Looking for necessary entity by key - " + key + " " + key.getClass());
         Entity model = GetModel();
 
         try (PreparedStatement statement = connector.getConnection().prepareStatement(CreateSelectQuery())) {
@@ -53,6 +70,7 @@ public abstract class HarwexBankDbDAO<Entity, Key> implements DAO<Entity, Key> {
 
     @Override
     public void update(Entity model) {
+        LOGGER.info("Updating entity " + model.getClass() + " to add it to Database");
         try (PreparedStatement statement = connector.getConnection().prepareStatement(CreateUpdateQuery())) {
             FillStatement(statement, model);
             statement.executeUpdate();
@@ -66,6 +84,7 @@ public abstract class HarwexBankDbDAO<Entity, Key> implements DAO<Entity, Key> {
 
     @Override
     public void delete(Entity model) {
+        LOGGER.info("Deleting entity " + model.getClass() + " in DataBase");
         try (PreparedStatement statement = connector.getConnection().prepareStatement(CreateDeleteQuery())) {
             SetKey(statement, model, 1);
             statement.executeUpdate();
